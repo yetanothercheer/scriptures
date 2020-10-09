@@ -1,26 +1,30 @@
 // https://pegjs.org/online
 
 {
-	// Let's start with a single env.
 	let env = {};
 }
 
-Lang = (Decl / Expr) _ Lang / ""
-
-Decl = "let" _ k:Name _ "=" _ v:Integer { env[k] = v; }
-
-Expr = Term / Term ("+" / "-") Term
-
-Term = Integer / Variable
-
-Name = [a-zA-z][a-zA-z0-9]* { return text(); }
-
-Variable = [a-zA-z][a-zA-z0-9]* { 
-	let v = env[text()];
-    if (v) { return v; }
-    else { error(text() + " not exist."); }
+Language = s:Sentense tail:("\n" Sentense)* {
+	s();
+    tail.map(e => e[1]())
+    console.log(env)
 }
 
-Integer "integer" = _ [0-9]+ { return parseInt(text(), 10); }
+Sentense = v:V _ "=" f:Expr { return () => env[v] = f(); }
 
-_ "whitespace" = [ \t\n\r]* { return "_"; }
+Expr = i:Integer "+" v:V { return () => { return i() + env[v];  } } / Integer
+
+Integer "integer" = [0-9]+ { let v =  parseInt(text(), 10); return () => v; }
+
+_ "whitespace" = [ \t\n\r]*
+  
+V = [a-zA-Z]+
+
+/*
+Examples:
+
+a=1
+b=10+a
+c=101+b
+
+*/
