@@ -1,11 +1,13 @@
 // https://pegjs.org/online
 
+// TODO: write a complete language and repl for it in React
+
 {
 	let env = {};
 }
 
 Language = s:Sentense tail:("\n" Sentense)* {
-	s();
+    s();
     tail.map(e => e[1]())
     console.log(env)
 }
